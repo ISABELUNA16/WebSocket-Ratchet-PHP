@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>WebSocket Ratchet</title>
+</head>
+<body>
+	<h1>WebSocket Ratchet PHP</h1>
+	<form action="" name="messages">
+		<div> Nombre: 
+			<input type="text" name="name">
+		</div>
+		<div> Mensaje:
+			<input type="text" name="msg">
+		</div>
+		<div>
+			<input type="submit" value="Enviar" name="">
+		</div>		
+	</form>
+	<div id="status">
+	</div>
+</body>
+<script type="text/javascript">
+	
+	window.onload = function(){
+
+		var socket = new WebSocket("ws://localhost:8080");
+		var status = document.querySelector("#status");
+
+		socket.onopen = function(event){
+			status.innerHTML = "Conexión establecida.";
+		}
+
+		socket.onclose = function(event){
+			if(event.wasClean){
+				status.innerHTML = "conexion cancelada";
+			}else{
+				status.innerHTML = "Conexión fallida"
+			};
+
+			status.innerHTML += "<br> nombre: "+ event.code + " mensaje: " + event.reason;
+
+		}
+
+		socket.onmessage = function(event){
+			let menssage = JSON.parse(event.data);
+			status.innerHTML += "nombre: " + message.name + "<br>" + message.msg ;
+		}
+
+		socket.onerror = function(event){
+			status.innerHTML = " mens " + event.message;
+		}
+
+		document.forms["messages"].onsubmit = function(){
+
+			let message = {
+				name: this.name.value,
+			    msg: this.msg.value
+			}
+			
+			socket.send(JSON.stringify(message));
+			return false;
+		}
+	}
+
+</script>
+</html>
